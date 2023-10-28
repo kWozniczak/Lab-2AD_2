@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using LibApp.Models;
 
 namespace LibApp.Data
 {
@@ -9,5 +10,8 @@ namespace LibApp.Data
             : base(options)
         {
         }
+
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<MembershipType> MembershipTypes { get; set; }
     }
 }

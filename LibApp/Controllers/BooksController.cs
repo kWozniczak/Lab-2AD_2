@@ -1,6 +1,8 @@
 ﻿using LibApp.Models;
+using LibApp.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Customer = LibApp.Models.Customer;
 
 namespace LibApp.Controllers
 {
@@ -73,8 +75,26 @@ namespace LibApp.Controllers
         public IActionResult Random()
         {
             var firstBook = new Book() { Author = "Random author", Title = "Random title" };
-            return RedirectToAction("Index", "Book", new { page = 1, sortBy = "title" });
+
+            //ViewBag.Book = firstBook;
+            //ViewData["FirstBook"] = firstBook;
+
+            var customers = new List<Customer>
+            {
+                new Customer { Name = "Customer 1" },
+                new Customer { Name = "Customer 2" }
+            };
+
+            var randomBookViewModel = new RandomBooksViewModel
+            {
+                Book = firstBook,
+                Customers = customers
+            };
+
+            return View(randomBookViewModel);
+            //return RedirectToAction("Index", "Book", new { page = 1, sortBy = "title" });
         }
+
 
         // GET: BooksController/Delete/5
         public ActionResult Delete(int id)
