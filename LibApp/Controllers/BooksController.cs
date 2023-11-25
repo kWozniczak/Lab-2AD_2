@@ -3,30 +3,41 @@ using LibApp.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Customer = LibApp.Models.Customer;
+using Microsoft.EntityFrameworkCore;
+using LibApp.Data;
 
 namespace LibApp.Controllers
 {
     public class BooksController : Controller
     {
+        public BooksController(ApplicationDbContext dbContext)
+        {
+            _context = dbContext;
+        }
+
         // GET: BooksController/{pageIndex}&{sortBy}
         public IActionResult Index(int? pageIndex, string sortBy)
         {
-            if (!pageIndex.HasValue)
-            {
-                pageIndex = 1;
-            }
-            if (String.IsNullOrWhiteSpace(sortBy))
-            {
-                sortBy = "title";
-            }
+            var books = _context.Books
+               .Include(b => b.Genre)
+               .ToList();
 
-            return Content(String.Format("pageIndex={0}&sortBy={1}", pageIndex, sortBy));
+            return View(books);
         }
 
         // GET: BooksController/Details/5
-        public ActionResult Details(int id)
+        public IActionResult Details(int id)
         {
-            return View();
+            var book = _context.Books
+                           .Include(c => c.Genre)
+                           .SingleOrDefault(c => c.Id == id);
+
+            if (book == null)
+            {
+                return Content("Book not found");
+            }
+
+            return View(book);
         }
 
         // GET: BooksController/Create
@@ -116,5 +127,7 @@ namespace LibApp.Controllers
                 return View();
             }
         }
+
+        private ApplicationDbContext _context;
     }
 }
