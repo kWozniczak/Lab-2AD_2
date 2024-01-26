@@ -10,13 +10,32 @@ namespace LibApp.Controllers
 {
     public class BooksController : Controller
     {
-        public BooksController(ApplicationDbContext dbContext)
+        private readonly ApplicationDbContext _context;
+
+        public BooksController(ApplicationDbContext context)
         {
-            _context = dbContext;
+            _context = context;
         }
 
-        // GET: BooksController/{pageIndex}&{sortBy}
-        public IActionResult Index(int? pageIndex, string sortBy)
+        public IActionResult Edit(int id)
+        {
+            var book = _context.Books.SingleOrDefault(b => b.Id == id);
+
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new BookFormViewModel
+            {
+                Book = book,
+                Genres = _context.Genres.ToList()
+            };
+
+            return View("BookForm", viewModel);
+        }
+
+        public IActionResult Index()
         {
             var books = _context.Books
                .Include(b => b.Genre)
@@ -25,12 +44,11 @@ namespace LibApp.Controllers
             return View(books);
         }
 
-        // GET: BooksController/Details/5
-        public IActionResult Details(int id)
+        public ActionResult Details(int id)
         {
             var book = _context.Books
-                           .Include(c => c.Genre)
-                           .SingleOrDefault(c => c.Id == id);
+                .Include(c => c.Genre)
+                .SingleOrDefault(c => c.Id == id);
 
             if (book == null)
             {
@@ -40,94 +58,45 @@ namespace LibApp.Controllers
             return View(book);
         }
 
-        // GET: BooksController/Create
-        public ActionResult Create()
+        public IActionResult New()
         {
-            return View();
-        }
-
-        // POST: BooksController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
+            var genres = _context.Genres.ToList();
+            var viewModel = new BookFormViewModel
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: BooksController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: BooksController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: BooksController/Random
-        public IActionResult Random()
-        {
-            var firstBook = new Book() { Author = "Random author", Title = "Random title" };
-
-            //ViewBag.Book = firstBook;
-            //ViewData["FirstBook"] = firstBook;
-
-            var customers = new List<Customer>
-            {
-                new Customer { Name = "Customer 1" },
-                new Customer { Name = "Customer 2" }
+                Genres = genres
             };
 
-            var randomBookViewModel = new RandomBooksViewModel
-            {
-                Book = firstBook,
-                Customers = customers
-            };
-
-            return View(randomBookViewModel);
-            //return RedirectToAction("Index", "Book", new { page = 1, sortBy = "title" });
+            return View("BookForm", viewModel);
         }
 
-
-        // GET: BooksController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: BooksController/Delete/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public IActionResult Save(Book book)
         {
+            if (book.Id == 0)
+            {
+                book.DateAdded = DateTime.Now;
+                _context.Books.Add(book);
+            }
+            else
+            {
+                var bookInDb = _context.Books.SingleOrDefault(b => b.Id == book.Id);
+                bookInDb.Title = book.Title;
+                bookInDb.GenreId = book.GenreId;
+                bookInDb.ReleaseDate = book.ReleaseDate;
+                bookInDb.NumberInStock = book.NumberInStock;
+            }
+
             try
             {
-                return RedirectToAction(nameof(Index));
+                _context.SaveChanges();
             }
-            catch
+            catch (DbUpdateException e)
             {
-                return View();
+                Console.WriteLine(e);
             }
-        }
 
-        private ApplicationDbContext _context;
+            return RedirectToAction("Index", "Books");
+        }
     }
 }
+
