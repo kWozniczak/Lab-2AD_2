@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using AutoMapper;
 using LibApp.Dtos;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibApp.Controllers.Api
 {
@@ -22,7 +23,10 @@ namespace LibApp.Controllers.Api
         [HttpGet]
         public IActionResult GetCustomers()
         {
-            return Ok(_context.Customers.ToList().Select(_mapper.Map<Customer, CustomerDto>));
+            return Ok(_context.Customers
+                .Include(c => c.MembershipType)
+                .ToList()
+                .Select(_mapper.Map<Customer, CustomerDto>));
         }
 
         // GET /api/customers/{id}
@@ -49,7 +53,7 @@ namespace LibApp.Controllers.Api
 
             _context.Customers.Add(_mapper.Map<Customer>(customerDto));
             _context.SaveChanges();
-            return CreatedAtRoute("GetCustomer", new { id = customerDto.Id }, customerDto);
+            return CreatedAtRoute(nameof(GetCustomer), new { id = customerDto.Id }, customerDto);
         }
 
         // PUT /api/customers/{id}

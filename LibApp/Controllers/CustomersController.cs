@@ -14,13 +14,16 @@ namespace LibApp.Controllers
     {
         // DbContext will be polled through Dependency Injection
         public CustomersController(ApplicationDbContext dbContext)
-        { 
+        {
             _context = dbContext;
         }
+
         public ViewResult Index()
         {
-            var customers = _context.Customers.Include(c => c.MembershipType).ToList();
-            return View(customers);
+            //var customers = _context.Customers.Include(c => c.MembershipType).ToList();
+            //return View(customers);
+
+            return View(); // Data is polled from API controller using ajax request
         }
 
         public IActionResult Details(int id)
@@ -60,7 +63,6 @@ namespace LibApp.Controllers
                 };
                 return View("CustomerForm", viewModel);
             }
-
             if (customer.Id == 0)
             {
                 _context.Customers.Add(customer);

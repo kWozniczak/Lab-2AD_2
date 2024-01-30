@@ -1,6 +1,4 @@
-﻿using Humanizer.Localisation;
-
-namespace LibApp.Models
+﻿namespace LibApp.Models
 {
     public class Book
     {

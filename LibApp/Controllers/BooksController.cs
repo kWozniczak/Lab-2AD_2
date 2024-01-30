@@ -37,18 +37,20 @@ namespace LibApp.Controllers
 
         public IActionResult Index()
         {
+
             var books = _context.Books
-               .Include(b => b.Genre)
-               .ToList();
+                .Include(b => b.Genre)
+                .ToList();
 
             return View(books);
         }
 
+
         public ActionResult Details(int id)
         {
             var book = _context.Books
-                .Include(c => c.Genre)
-                .SingleOrDefault(c => c.Id == id);
+                .Include(b => b.Genre)
+                .SingleOrDefault(b => b.Id == id);
 
             if (book == null)
             {
@@ -99,4 +101,3 @@ namespace LibApp.Controllers
         }
     }
 }
-
