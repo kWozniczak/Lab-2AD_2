@@ -37,12 +37,19 @@ namespace LibApp.Controllers
 
         public IActionResult Index()
         {
+            if(_context.Books.Any())
+            {
 
-            var books = _context.Books
-                .Include(b => b.Genre)
-                .ToList();
+                var books = _context.Books
+                    .Include(b => b.Genre)
+                    .DefaultIfEmpty()
+                    .ToList();
 
-            return View(books);
+                return View(books);
+            }
+
+
+            return View();
         }
 
 
@@ -71,6 +78,7 @@ namespace LibApp.Controllers
             return View("BookForm", viewModel);
         }
 
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public IActionResult Save(Book book)
         {
