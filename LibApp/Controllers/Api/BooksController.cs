@@ -1,6 +1,7 @@
 ﻿using LibApp.Data;
 using LibApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibApp.Controllers.Api
 {
@@ -19,6 +20,8 @@ namespace LibApp.Controllers.Api
         public IActionResult GetBooks()
         {
             return Ok(_context.Books
+                .DefaultIfEmpty()
+                .Include(b => b.Genre)
                 .ToList());
         }
 

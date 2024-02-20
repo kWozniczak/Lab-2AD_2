@@ -41,6 +41,13 @@ namespace LibApp.Models
                     );
                 }
 
+                if (!context.Customers.Any())
+                {
+                    context.Customers.AddRange(
+                        new Customer { Name = "Name1 ", MembershipTypeId = 1, MembershipType = null }
+                        );
+                }
+
                 context.SaveChanges();
             }
         }

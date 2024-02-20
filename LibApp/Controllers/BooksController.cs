@@ -18,7 +18,9 @@ namespace LibApp.Controllers
 
         public IActionResult Edit(int id)
         {
-            var book = _context.Books.SingleOrDefault(b => b.Id == id);
+            var book = _context.Books
+                .DefaultIfEmpty()
+                .SingleOrDefault(b => b.Id == id);
 
             if (book == null)
             {
@@ -36,12 +38,7 @@ namespace LibApp.Controllers
 
         public IActionResult Index()
         {
-            var books = _context.Books
-                .Include(b => b.Genre)
-                .DefaultIfEmpty()
-                .ToList();
-
-            return View(books);
+            return View();
         }
 
 
