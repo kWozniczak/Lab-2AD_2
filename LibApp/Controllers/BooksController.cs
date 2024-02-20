@@ -2,7 +2,6 @@
 using LibApp.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Customer = LibApp.Models.Customer;
 using Microsoft.EntityFrameworkCore;
 using LibApp.Data;
 
@@ -37,19 +36,12 @@ namespace LibApp.Controllers
 
         public IActionResult Index()
         {
-            if(_context.Books.Any())
-            {
+            var books = _context.Books
+                .Include(b => b.Genre)
+                .DefaultIfEmpty()
+                .ToList();
 
-                var books = _context.Books
-                    .Include(b => b.Genre)
-                    .DefaultIfEmpty()
-                    .ToList();
-
-                return View(books);
-            }
-
-
-            return View();
+            return View(books);
         }
 
 
@@ -57,6 +49,7 @@ namespace LibApp.Controllers
         {
             var book = _context.Books
                 .Include(b => b.Genre)
+                .DefaultIfEmpty()
                 .SingleOrDefault(b => b.Id == id);
 
             if (book == null)
