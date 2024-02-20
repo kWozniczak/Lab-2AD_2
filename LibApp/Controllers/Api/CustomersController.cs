@@ -13,6 +13,9 @@ namespace LibApp.Controllers.Api
     [ApiController]
     public class CustomersController : ControllerBase
     {
+        private ApplicationDbContext _context;
+        private IMapper _mapper;
+
         public CustomersController(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
@@ -92,7 +95,18 @@ namespace LibApp.Controllers.Api
             return Ok(customerInDb);
         }
 
-        private ApplicationDbContext _context;
-        private IMapper _mapper;
+        public IActionResult Details(int id)
+        {
+            var customer = _context.Customers
+                .Include(c => c.MembershipType)
+                .SingleOrDefault(c => c.Id == id);
+
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<CustomerDto>(customer));
+        }
     }
 }

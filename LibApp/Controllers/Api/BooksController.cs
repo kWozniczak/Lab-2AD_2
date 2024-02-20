@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using LibApp.Data;
+﻿using LibApp.Data;
 using LibApp.Models;
 using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
-using LibApp.Dtos;
-using Microsoft.EntityFrameworkCore;
 
 namespace LibApp.Controllers.Api
 {
